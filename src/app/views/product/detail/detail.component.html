@@ -2,7 +2,7 @@
     <div class="container" *ngIf="product">
         <div class="detail-title">{{product.name}}</div>
         <div class="detail-product">
-            <div class="detail-image" style="background-image: url({{serverStaticPath + product.image}})"></div>
+          <div class="detail-image" [style.background-image]="'url(' + serverStaticPath + product.image + ')'"></div>
             <div class="detail-info">
                 <div class="detail-info-items">
                     <!-- Освещение -->

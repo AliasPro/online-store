@@ -1,18 +1,18 @@
-import {Component, OnInit} from '@angular/core';
-import {ProductService} from "../../../shared/services/product.service";
-import {ProductType} from "../../../../types/product.type";
-import {CategoryService} from "../../../shared/services/category.service";
-import {CategoryWithTypeType} from "../../../../types/category-with-type.type";
-import {ActivatedRoute, Router} from "@angular/router";
-import {ActiveParamsType} from "../../../../types/active-params.type";
-import {ActiveParamsUtil} from "../../../shared/utils/active-params.util";
-import {AppliedFilterType} from "../../../../types/applied-filter.type";
-import {debounceTime} from "rxjs";
-import {CartService} from "../../../shared/services/cart.service";
-import {CartType} from "../../../../types/cart.type";
-import {FavoriteService} from "../../../shared/services/favorite.service";
-import {FavoriteType} from "../../../../types/favorite.type";
-import {DefaultResponseType} from "../../../../types/default-response.type";
+import { Component, HostListener, OnInit } from '@angular/core';
+import { ProductService } from "../../../shared/services/product.service";
+import { ProductType } from "../../../../types/product.type";
+import { CategoryService } from "../../../shared/services/category.service";
+import { CategoryWithTypeType } from "../../../../types/category-with-type.type";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ActiveParamsType } from "../../../../types/active-params.type";
+import { ActiveParamsUtil } from "../../../shared/utils/active-params.util";
+import { AppliedFilterType } from "../../../../types/applied-filter.type";
+import { debounceTime } from "rxjs";
+import { CartService } from "../../../shared/services/cart.service";
+import { CartType } from "../../../../types/cart.type";
+import { FavoriteService } from "../../../shared/services/favorite.service";
+import { FavoriteType } from "../../../../types/favorite.type";
+import { DefaultResponseType } from "../../../../types/default-response.type";
 
 @Component({
     selector: 'app-catalog',
@@ -22,17 +22,27 @@ import {DefaultResponseType} from "../../../../types/default-response.type";
 export class CatalogComponent implements OnInit {
     products: ProductType[] = []
     categoriesWithTypes: CategoryWithTypeType[] = []
-    activeParams: ActiveParamsType = {types: []}
+    activeParams: ActiveParamsType = { types: [] }
     appliedFilters: AppliedFilterType[] = []
     cart: CartType | null = null
 
     openSort: boolean = false
     sortingOptions: { name: string, value: string }[] = [
-        {name: 'От А до Я', value: 'az-asc'},
-        {name: 'От Я до А', value: 'az-desc'},
-        {name: 'По возрастанию цены', value: 'price-asc'},
-        {name: 'По убыванию цены', value: 'price-desc'},
+        { name: 'От А до Я', value: 'az-asc' },
+        { name: 'От Я до А', value: 'az-desc' },
+        { name: 'По возрастанию цены', value: 'price-asc' },
+        { name: 'По убыванию цены', value: 'price-desc' },
     ]
+
+    @HostListener('document:click', ['$event'])
+    clickOutside(event: Event): void {
+        const target = event.target as HTMLElement;
+
+        // Если клик был вне блока сортировки — закрываем
+        if (!target.closest('.catalog-sorting')) {
+            this.openSort = false;
+        }
+    }
 
     pages: number[] = []
     favoriteProducts: FavoriteType[] | null = null
@@ -164,7 +174,7 @@ export class CatalogComponent implements OnInit {
         }
 
         this.activeParams.page = 1
-        this.router.navigate(['/catalog'], {queryParams: this.activeParams})
+        this.router.navigate(['/catalog'], { queryParams: this.activeParams })
     }
 
     toggleSort(): void {
@@ -173,25 +183,26 @@ export class CatalogComponent implements OnInit {
 
     sort(value: string): void {
         this.activeParams.sort = value
-        this.router.navigate(['/catalog'], {queryParams: this.activeParams})
+        this.router.navigate(['/catalog'], { queryParams: this.activeParams })
+        this.openSort = false
     }
 
     openPage(page: number): void {
         this.activeParams.page = page
-        this.router.navigate(['/catalog'], {queryParams: this.activeParams})
+        this.router.navigate(['/catalog'], { queryParams: this.activeParams })
     }
 
     openPrevPage(): void {
         if (this.activeParams.page && this.activeParams.page > 1) {
             this.activeParams.page--
-            this.router.navigate(['/catalog'], {queryParams: this.activeParams})
+            this.router.navigate(['/catalog'], { queryParams: this.activeParams })
         }
     }
 
     openNextPage(): void {
         if (this.activeParams.page && this.activeParams.page < this.pages.length) {
             this.activeParams.page++
-            this.router.navigate(['/catalog'], {queryParams: this.activeParams})
+            this.router.navigate(['/catalog'], { queryParams: this.activeParams })
         }
     }
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, Subject, tap} from "rxjs";
+import {Observable, BehaviorSubject, tap} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {CartType} from "../../../types/cart.type";
 import {DefaultResponseType} from "../../../types/default-response.type";
@@ -11,7 +11,7 @@ import {CartCountType} from "../../../types/cart-count.type";
 })
 export class CartService {
     private count: number = 0
-    count$: Subject<number> = new Subject<number>()
+     count$: BehaviorSubject<number> = new BehaviorSubject<number>(0)
 
     constructor(private http: HttpClient) {
     }
@@ -34,14 +34,17 @@ export class CartService {
         )
     }
 
-    getProductsCount(): Observable<CartCountType | DefaultResponseType> {
-        return this.http.get<CartCountType | DefaultResponseType>(environment.api + 'cart/count', {withCredentials: true}).pipe(
-            tap((result => {
-                if (!result.hasOwnProperty('error')) {
-                    this.setCount((result as CartCountType).count)
-                }
-            }))
-        )
+    getProductsCount(): void {
+    this.http.get<CartCountType | DefaultResponseType>(environment.api + 'cart/count', {withCredentials: true})
+        .subscribe(result => {
+            if (!result.hasOwnProperty('error')) {
+                this.setCount((result as CartCountType).count)
+            }
+        })
+}
+
+    resetCount(): void {
+        this.setCount(0)
     }
 
     setCount(count: number) {

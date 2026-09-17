@@ -6,6 +6,7 @@ import {LoginResponseType} from "../../../../types/login-response.type";
 import {HttpErrorResponse} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
+import { CartService } from '../../../shared/services/cart.service';
 
 @Component({
     selector: 'app-login',
@@ -28,6 +29,7 @@ export class LoginComponent implements OnInit {
         private authService: AuthService,
         private _snackBar: MatSnackBar,
         private router: Router,
+         private cartService: CartService,
         ) {
     }
 
@@ -56,6 +58,7 @@ export class LoginComponent implements OnInit {
 
                 this.authService.setTokens(loginResponse.accessToken, loginResponse.refreshToken)
                 this.authService.userId = loginResponse.userId
+                this.cartService.getProductsCount()
                 this._snackBar.open('Вы успешно авторизовались!', 'Закрыть')
                 this.router.navigate(['/'])
             },

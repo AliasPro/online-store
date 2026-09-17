@@ -13,7 +13,7 @@
         </span>
     </div>
 
-    <div class="product-card-image" style="background-image: url({{serverStaticPath + product.image}})"></div>
+    <div class="product-card-image" [ngStyle]="{ 'background-image': 'url(' + serverStaticPath + product.image + ')' }"></div>
     <div class="product-card-name">{{ product.name }}</div>
     <div class="product-card-info" *ngIf="!isLite">
         <div class="product-card-price">{{ product.price }} BYN</div>

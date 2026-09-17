@@ -1,16 +1,14 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
-import {AuthService} from "../../../core/auth/auth.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {Router} from "@angular/router";
-import {CategoryWithTypeType} from "../../../../types/category-with-type.type";
-import {CartService} from "../../services/cart.service";
-import {CartCountType} from "../../../../types/cart-count.type";
-import {DefaultResponseType} from "../../../../types/default-response.type";
-import {ProductService} from "../../services/product.service";
-import {ProductType} from "../../../../types/product.type";
-import {environment} from "../../../../environments/environment";
-import {FormControl} from "@angular/forms";
-import {debounceTime} from "rxjs";
+import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { AuthService } from "../../../core/auth/auth.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Router } from "@angular/router";
+import { CategoryWithTypeType } from "../../../../types/category-with-type.type";
+import { CartService } from "../../services/cart.service";
+import { ProductService } from "../../services/product.service";
+import { ProductType } from "../../../../types/product.type";
+import { environment } from "../../../../environments/environment";
+import { FormControl } from "@angular/forms";
+import { debounceTime } from "rxjs";
 
 @Component({
     selector: 'app-header',
@@ -41,15 +39,14 @@ export class HeaderComponent implements OnInit {
             this.isLogged = result
         })
 
-        this.cartService.getProductsCount().subscribe((result: CartCountType | DefaultResponseType) => {
-            if ((result as DefaultResponseType).error !== undefined) {
-                throw new Error((result as DefaultResponseType).message)
-            }
-            this.productsCount = (result as CartCountType).count
-        })
-
         this.cartService.count$.subscribe((result: number) => {
             this.productsCount = result
+        })
+
+        this.cartService.getProductsCount()
+
+        this.cartService.count$.subscribe((count: number) => {
+            this.productsCount = count
         })
 
         this.searchField.valueChanges
@@ -82,6 +79,8 @@ export class HeaderComponent implements OnInit {
     doLogout(): void {
         this.authService.removeTokens()
         this.authService.userId = null
+        this.cartService.resetCount()
+        this.cartService.getProductsCount()
         this._snackBar.open('Вы вышли из системы', 'Закрыть')
         this.router.navigate(['/'])
     }
